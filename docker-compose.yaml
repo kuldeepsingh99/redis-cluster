@@ -1,0 +1,37 @@
+version: '3.5'
+
+services:
+  docker-mysql:
+    restart: always
+    container_name: docker-mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: customerdb
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+    volumes:
+      - db-data-new:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+      
+  customer-app:
+    restart: on-failure
+    image: kuldeep99/customer-redis:v5
+    expose:
+      - "8080"
+    volumes:
+      - /tmp:/logs
+    ports:
+      - 8080:8080
+    depends_on:
+      - docker-mysql
+    networks:
+      - backend   
+
+volumes:
+  db-data-new:
+  
+networks:
+  backend:     
